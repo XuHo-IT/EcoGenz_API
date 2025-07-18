@@ -28,3 +28,7 @@
 InfasStructure/Migrations
 
 EcoGreen/Extensions/vision.json
+
+
+.env
+appsettings.*.json
