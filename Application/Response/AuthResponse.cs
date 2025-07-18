@@ -7,5 +7,6 @@
         public string Email { get; set; }
         public string Token { get; set; }
         public string ProfilePhotoUrl { get; set; } = string.Empty;
+        public string Role { get; set; }
     }
 }

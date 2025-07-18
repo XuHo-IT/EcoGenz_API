@@ -9,5 +9,6 @@ namespace Application.Request.User
     public class GoogleLoginRequest
     {
         public string tokenId { get; set; }
+        public string role { get; set; }
     }
 }
