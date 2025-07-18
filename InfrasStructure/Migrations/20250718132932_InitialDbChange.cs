@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InfrasStructure.Migrations
 {
     /// <inheritdoc />
-    public partial class addInitialDb : Migration
+    public partial class InitialDbChange : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -273,7 +273,9 @@ namespace InfrasStructure.Migrations
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     ActivityId = table.Column<Guid>(type: "uuid", nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false),
-                    Attended = table.Column<bool>(type: "boolean", nullable: false)
+                    Attended = table.Column<bool>(type: "boolean", nullable: false),
+                    ActivityId1 = table.Column<Guid>(type: "uuid", nullable: true),
+                    UserId1 = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -285,11 +287,21 @@ namespace InfrasStructure.Migrations
                         principalColumn: "ActivityId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
+                        name: "FK_Registrations_Activities_ActivityId1",
+                        column: x => x.ActivityId1,
+                        principalTable: "Activities",
+                        principalColumn: "ActivityId");
+                    table.ForeignKey(
                         name: "FK_Registrations_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Registrations_AspNetUsers_UserId1",
+                        column: x => x.UserId1,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -432,9 +444,20 @@ namespace InfrasStructure.Migrations
                 column: "ActivityId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Registrations_UserId",
+                name: "IX_Registrations_ActivityId1",
                 table: "Registrations",
-                column: "UserId");
+                column: "ActivityId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Registrations_UserId_ActivityId",
+                table: "Registrations",
+                columns: new[] { "UserId", "ActivityId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Registrations_UserId1",
+                table: "Registrations",
+                column: "UserId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Shares_PostId",

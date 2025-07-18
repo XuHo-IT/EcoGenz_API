@@ -212,6 +212,9 @@ namespace InfrasStructure.Migrations
                     b.Property<Guid>("ActivityId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("ActivityId1")
+                        .HasColumnType("uuid");
+
                     b.Property<bool>("Attended")
                         .HasColumnType("boolean");
 
@@ -221,11 +224,19 @@ namespace InfrasStructure.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("UserId1")
+                        .HasColumnType("uuid");
+
                     b.HasKey("RegistrationId");
 
                     b.HasIndex("ActivityId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("ActivityId1");
+
+                    b.HasIndex("UserId1");
+
+                    b.HasIndex("UserId", "ActivityId")
+                        .IsUnique();
 
                     b.ToTable("Registrations");
                 });
@@ -543,11 +554,19 @@ namespace InfrasStructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Application.Entities.Base.Activity", null)
+                        .WithMany("ActivityRegistrations")
+                        .HasForeignKey("ActivityId1");
+
                     b.HasOne("Application.Entities.Base.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("Application.Entities.Base.User", null)
+                        .WithMany("ActivityRegistrations")
+                        .HasForeignKey("UserId1");
 
                     b.Navigation("Activity");
 
@@ -607,11 +626,15 @@ namespace InfrasStructure.Migrations
 
             modelBuilder.Entity("Application.Entities.Base.Activity", b =>
                 {
+                    b.Navigation("ActivityRegistrations");
+
                     b.Navigation("Comments");
                 });
 
             modelBuilder.Entity("Application.Entities.Base.User", b =>
                 {
+                    b.Navigation("ActivityRegistrations");
+
                     b.Navigation("Comments");
 
                     b.Navigation("Likes");

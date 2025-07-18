@@ -38,6 +38,7 @@ namespace Application.Entities.Base
 
         public bool IsApproved { get; set; }
 
+        public virtual ICollection<Registration> ActivityRegistrations { get; set; } = new List<Registration>();
         public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
 
     }

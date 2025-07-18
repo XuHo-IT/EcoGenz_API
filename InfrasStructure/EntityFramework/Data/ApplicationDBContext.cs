@@ -21,6 +21,7 @@ namespace InfrasStructure.EntityFramework.Data
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Share> Shares { get; set; }
 
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -90,11 +91,6 @@ namespace InfrasStructure.EntityFramework.Data
                 .HasForeignKey(l => l.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            //modelBuilder.Entity<Like>()
-            //    .HasOne(l => l.Post)
-            //    .WithMany(p => p.Likes)
-            //    .HasForeignKey(l => l.PostId)
-            //    .OnDelete(DeleteBehavior.Cascade);
 
 
             modelBuilder.Entity<Like>()
@@ -108,16 +104,19 @@ namespace InfrasStructure.EntityFramework.Data
                 .HasForeignKey(s => s.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            //modelBuilder.Entity<Share>()
-            //    .HasOne(s => s.Post)
-            //    .WithMany(p => p.Shares)
-            //    .HasForeignKey(s => s.PostId)
-            //    .OnDelete(DeleteBehavior.Cascade);
 
 
             modelBuilder.Entity<Share>()
                 .HasIndex(s => new { s.UserId, s.PostId })
                 .IsUnique();
+
+
+
+            // Optional: Add a unique constraint to prevent duplicate registrations
+            modelBuilder.Entity<Registration>()
+                .HasIndex(r => new { r.UserId, r.ActivityId })
+                .IsUnique();
+
         }
     }
 }

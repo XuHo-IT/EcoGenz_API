@@ -5,7 +5,9 @@ using Application.Request.Activity;
 using Application.Request.Post;
 using AutoMapper;
 using EcoGreen.Service;
+using InfrasStructure.EntityFramework.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace EcoGreen.Controllers
 {
@@ -16,11 +18,13 @@ namespace EcoGreen.Controllers
         private readonly ICompanyFormService _companyFormService;
         private readonly IMapper _mapper;
         private readonly ICommentService _commentService;
-        public CompanyFormController(ICompanyFormService companyFormService, ICommentService commentService, IMapper mapper)
+        private readonly ApplicationDBContext _context;
+        public CompanyFormController(ICompanyFormService companyFormService, ICommentService commentService, IMapper mapper, ApplicationDBContext context)
         {
             _companyFormService = companyFormService;
             _mapper = mapper;
             _commentService = commentService;
+            _context = context;
         }
 
         [HttpGet("get-all-activities")]
@@ -100,6 +104,48 @@ namespace EcoGreen.Controllers
         {
             var response = await _commentService.ListCommentAsync();
             return StatusCode((int)response.StatusCode, response);
+        }
+
+        // POST: api/activities/register
+        [HttpPost("register-activities")]
+        public async Task<IActionResult> RegisterForActivity([FromBody] RegisterActivityRequest request)
+        {
+            var exists = await _context.Registrations
+                .AnyAsync(ar => ar.UserId == request.UserId && ar.ActivityId == request.ActivityId);
+
+            if (exists)
+                return Ok(new { message = "User already registered." });
+
+
+            var registration = new Registration
+            {
+                RegistrationId = Guid.NewGuid(),
+                UserId = request.UserId,
+                ActivityId = request.ActivityId
+            };
+
+            _context.Registrations.Add(registration);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Registered successfully." });
+
+        }
+
+        // GET: api/activities/{activityId}/users
+        [HttpGet("{activityId}/users")]
+        public async Task<IActionResult> GetUsersForActivity(Guid activityId)
+        {
+            var users = await _context.Registrations
+                .Where(ar => ar.ActivityId == activityId)
+                .Select(ar => new
+                {
+                    ar.User.Id,
+                    ar.User.UserName,
+                    ar.User.Email
+                })
+                .ToListAsync();
+
+            return Ok(users);
         }
     }
 }

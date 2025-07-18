@@ -12,5 +12,7 @@ namespace Application.Entities.Base
         public ICollection<Comment> Comments { get; set; }
         public ICollection<Like> Likes { get; set; }
         public ICollection<Share> Shares { get; set; }
+        public virtual ICollection<Registration> ActivityRegistrations { get; set; } = new List<Registration>();
+
     }
 }
