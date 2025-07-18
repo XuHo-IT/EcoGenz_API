@@ -24,10 +24,10 @@ namespace EcoGreen.Helpers
                 .ForMember(dest => dest.MediaUrl, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
-                .ForMember(dest => dest.User, opt => opt.Ignore())
-                .ForMember(dest => dest.Likes, opt => opt.Ignore())
-                .ForMember(dest => dest.Shares, opt => opt.Ignore())
-                .ForMember(dest => dest.Comments, opt => opt.Ignore());
+                .ForMember(dest => dest.User, opt => opt.Ignore());
+            //.ForMember(dest => dest.Likes, opt => opt.Ignore())
+            //.ForMember(dest => dest.Shares, opt => opt.Ignore())
+            //.ForMember(dest => dest.Comments, opt => opt.Ignore());
 
             // UpdatePostRequest to Post
             CreateMap<UpdatePostRequest, Post>()
@@ -36,17 +36,17 @@ namespace EcoGreen.Helpers
                 .ForMember(dest => dest.MediaUrl, opt => opt.MapFrom(src => src.MediaUrl))
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
-                .ForMember(dest => dest.User, opt => opt.Ignore())
-                .ForMember(dest => dest.Comments, opt => opt.Ignore())
-                .ForMember(dest => dest.Likes, opt => opt.Ignore())
-                .ForMember(dest => dest.Shares, opt => opt.Ignore());
+                .ForMember(dest => dest.User, opt => opt.Ignore());
+            //.ForMember(dest => dest.Comments, opt => opt.Ignore())
+            //.ForMember(dest => dest.Likes, opt => opt.Ignore())
+            //.ForMember(dest => dest.Shares, opt => opt.Ignore());
 
             // CommentRequest to Comment
             CreateMap<CommentRequest, Comment>()
                 .ForMember(dest => dest.Text, opt => opt.MapFrom(src => src.Content))
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.User, opt => opt.Ignore())
-                .ForMember(dest => dest.Post, opt => opt.Ignore());
+                .ForMember(dest => dest.Activity, opt => opt.Ignore());
 
             // ShareRequest to Share
             CreateMap<ShareRequest, Share>()
@@ -64,7 +64,8 @@ namespace EcoGreen.Helpers
     .ForMember(dest => dest.AmountOfPeople, opt => opt.MapFrom(src => src.AmountOfPeople))
     .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.Date))
     .ForMember(dest => dest.CreatedByCompanyId, opt => opt.MapFrom(src => src.CreatedByCompanyId))
-    .ForMember(dest => dest.IsApproved, opt => opt.MapFrom(src => src.IsApproved));
+    .ForMember(dest => dest.IsApproved, opt => opt.MapFrom(src => src.IsApproved))
+            .ForMember(dest => dest.Comments, opt => opt.Ignore());
 
             //UpdateActivity
             CreateMap<UpdateActivityRequest, Activity>()

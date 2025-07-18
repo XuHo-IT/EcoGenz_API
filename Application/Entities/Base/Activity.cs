@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Application.Entities.Base.Post;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Application.Entities.Base
@@ -36,5 +37,8 @@ namespace Application.Entities.Base
         public virtual User CompanyUser { get; set; }
 
         public bool IsApproved { get; set; }
+
+        public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
+
     }
 }

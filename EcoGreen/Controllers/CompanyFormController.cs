@@ -1,6 +1,8 @@
 ﻿using Application.Entities.Base;
+using Application.Entities.Base.Post;
 using Application.Interface.IServices;
 using Application.Request.Activity;
+using Application.Request.Post;
 using AutoMapper;
 using EcoGreen.Service;
 using Microsoft.AspNetCore.Mvc;
@@ -13,10 +15,12 @@ namespace EcoGreen.Controllers
     {
         private readonly ICompanyFormService _companyFormService;
         private readonly IMapper _mapper;
-        public CompanyFormController(ICompanyFormService companyFormService, IMapper mapper)
+        private readonly ICommentService _commentService;
+        public CompanyFormController(ICompanyFormService companyFormService, ICommentService commentService, IMapper mapper)
         {
             _companyFormService = companyFormService;
             _mapper = mapper;
+            _commentService = commentService;
         }
 
         [HttpGet("get-all-activities")]
@@ -75,6 +79,26 @@ namespace EcoGreen.Controllers
         public async Task<IActionResult> DeleteActivity(Guid activityId)
         {
             var response = await _companyFormService.DeleteActivityForm(activityId);
+            return StatusCode((int)response.StatusCode, response);
+        }
+
+        [HttpPost("comment")]
+        public async Task<IActionResult> AddComment([FromBody] CommentRequest request)
+        {
+            var comment = _mapper.Map<Comment>(request);
+            var response = await _commentService.AddCommentAsync(comment);
+            return StatusCode((int)response.StatusCode, response);
+        }
+        [HttpGet("list-comment/{activityId}")]
+        public async Task<IActionResult> GetCommentByActivityId(Guid activityId)
+        {
+            var response = await _commentService.GetCommentByActivityId(activityId);
+            return StatusCode((int)response.StatusCode, response);
+        }
+        [HttpGet("list-comment")]
+        public async Task<IActionResult> ListComment()
+        {
+            var response = await _commentService.ListCommentAsync();
             return StatusCode((int)response.StatusCode, response);
         }
     }

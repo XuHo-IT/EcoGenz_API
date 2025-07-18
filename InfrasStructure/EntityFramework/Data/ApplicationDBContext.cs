@@ -78,9 +78,9 @@ namespace InfrasStructure.EntityFramework.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Comment>()
-                .HasOne(c => c.Post)
+                .HasOne(c => c.Activity)
                 .WithMany(p => p.Comments)
-                .HasForeignKey(c => c.PostId)
+                .HasForeignKey(c => c.ActivityId)
                 .OnDelete(DeleteBehavior.Cascade);
 
 
@@ -90,11 +90,11 @@ namespace InfrasStructure.EntityFramework.Data
                 .HasForeignKey(l => l.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Like>()
-                .HasOne(l => l.Post)
-                .WithMany(p => p.Likes)
-                .HasForeignKey(l => l.PostId)
-                .OnDelete(DeleteBehavior.Cascade);
+            //modelBuilder.Entity<Like>()
+            //    .HasOne(l => l.Post)
+            //    .WithMany(p => p.Likes)
+            //    .HasForeignKey(l => l.PostId)
+            //    .OnDelete(DeleteBehavior.Cascade);
 
 
             modelBuilder.Entity<Like>()
@@ -108,11 +108,11 @@ namespace InfrasStructure.EntityFramework.Data
                 .HasForeignKey(s => s.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Share>()
-                .HasOne(s => s.Post)
-                .WithMany(p => p.Shares)
-                .HasForeignKey(s => s.PostId)
-                .OnDelete(DeleteBehavior.Cascade);
+            //modelBuilder.Entity<Share>()
+            //    .HasOne(s => s.Post)
+            //    .WithMany(p => p.Shares)
+            //    .HasForeignKey(s => s.PostId)
+            //    .OnDelete(DeleteBehavior.Cascade);
 
 
             modelBuilder.Entity<Share>()

@@ -154,7 +154,7 @@ namespace EcoGreen.Services
                 {
                     UserName = payload.Name,
                     Email = payload.Email,
-                    ProfilePhotoUrl = payload.Picture // Assuming Picture is the URL of the user's profile photo
+                    ProfilePhotoUrl = payload.Picture
                 };
                 var identityResult = await _authRepository.CreateAsync(user);
                 if (!identityResult.Succeeded)
@@ -183,7 +183,7 @@ namespace EcoGreen.Services
             var token = _tokenService.GenerateJwtToken(user, roles.ToList());
             response.StatusCode = HttpStatusCode.OK;
             response.isSuccess = true;
-            response.Result = new AuthResponse { Token = token, UserId = user.Id, UserName = user.UserName, Email = user.Email };
+            response.Result = new AuthResponse { Token = token, UserId = user.Id, UserName = user.UserName, Email = user.Email, ProfilePhotoUrl = user.ProfilePhotoUrl };
             return response;
         }
     }
