@@ -5,7 +5,7 @@ namespace Application.Request.Post
     public class CommentRequest
     {
         [Required]
-        public Guid PostId { get; set; }
+        public Guid ActivityId { get; set; }
 
         [Required]
         public Guid UserId { get; set; }

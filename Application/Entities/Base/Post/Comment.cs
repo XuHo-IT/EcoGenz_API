@@ -19,12 +19,12 @@ namespace Application.Entities.Base.Post
         public Guid UserId { get; set; }
 
         [Required]
-        public Guid PostId { get; set; }
+        public Guid ActivityId { get; set; }
 
         [ForeignKey(nameof(UserId))]
         public virtual User User { get; set; }
 
-        [ForeignKey(nameof(PostId))]
-        public virtual Post Post { get; set; }
+        [ForeignKey(nameof(ActivityId))]
+        public virtual Activity Activity { get; set; }
     }
 }
