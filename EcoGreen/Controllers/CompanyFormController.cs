@@ -1,5 +1,7 @@
-﻿using Application.Entities.Base;
+﻿using Application.Entities;
+using Application.Entities.Base;
 using Application.Entities.Base.Post;
+using Application.Interface.IRepositories;
 using Application.Interface.IServices;
 using Application.Request.Activity;
 using Application.Request.Post;
@@ -18,13 +20,15 @@ namespace EcoGreen.Controllers
         private readonly ICompanyFormService _companyFormService;
         private readonly IMapper _mapper;
         private readonly ICommentService _commentService;
+        private readonly IAuthRepository _authRepository;
         private readonly ApplicationDBContext _context;
-        public CompanyFormController(ICompanyFormService companyFormService, ICommentService commentService, IMapper mapper, ApplicationDBContext context)
+        public CompanyFormController(ICompanyFormService companyFormService, ICommentService commentService, IMapper mapper, ApplicationDBContext context, IAuthRepository authRepository)
         {
             _companyFormService = companyFormService;
             _mapper = mapper;
             _commentService = commentService;
             _context = context;
+            _authRepository = authRepository;
         }
 
         [HttpGet("get-all-activities")]
@@ -116,7 +120,11 @@ namespace EcoGreen.Controllers
             if (exists)
                 return Ok(new { message = "User already registered." });
 
+            var user = await _authRepository.FindByIdAsync(request.UserId.ToString());
+            if (user == null)
+                return NotFound(new { message = "User not found." });
 
+            // Add the new registration
             var registration = new Registration
             {
                 RegistrationId = Guid.NewGuid(),
@@ -125,11 +133,53 @@ namespace EcoGreen.Controllers
             };
 
             _context.Registrations.Add(registration);
+
+
+            user.DoingAction += 1;
+            user.ImpactPoints += 10;
+
+            var achievementCandidates = new List<(int Threshold, string Name, string Description)>
+{
+    (10, "Seed Planter", "You're just getting started! Earned 10 impact points."),
+    (25, "Helping Hand", "You're making a difference. Earned 25 points through kind acts."),
+    (50, "Eco Hero", "You earned 50 impact points!"),
+    (75, "Green Guardian", "You've taken the environment under your wing. 75 points strong!"),
+    (100, "Charity Champion", "A true hero of charity. 100 points achieved!"),
+    (150, "Earth Defender", "You've stood up for our planet with 150 points."),
+    (200, "Hope Spreader", "Spreading hope through actions — 200 points milestone reached."),
+    (300, "Impact Warrior", "You're a relentless force for good. 300 points earned!"),
+    (500, "Legend of Good", "A legendary contributor. 500 points of pure impact!"),
+    (750, "Planet Pioneer", "Blazing the trail for others. 750 points and counting."),
+    (1000, "Global Guardian", "The ultimate protector of people and planet. 1000 points achieved!")
+};
+
+
+            foreach (var (threshold, name, description) in achievementCandidates.OrderByDescending(a => a.Threshold))
+            {
+                bool alreadyHas = user.Achievements.Any(a => a.Name == name);
+
+                if (user.ImpactPoints >= threshold && !alreadyHas)
+                {
+                    var newAchievement = new Achievement
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = name,
+                        Description = description,
+                        UserId = user.Id
+                    };
+
+                    _context.Achievements.Add(newAchievement);
+                    break;
+                }
+            }
+
+
+
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "Registered successfully." });
-
         }
+
 
         // GET: api/activities/{activityId}/users
         [HttpGet("{activityId}/users")]

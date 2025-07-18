@@ -74,6 +74,27 @@ namespace EcoGreen.Services
             }
 
         }
+        public async Task<APIResponse> GetUsersByPointAscAsync()
+        {
+            var response = new APIResponse();
+
+            var user = await _authRepository.GetUsersByPointAscAsync();
+            if (user == null)
+            {
+                response.StatusCode = HttpStatusCode.Unauthorized;
+                response.isSuccess = false;
+                response.ErrorMessages.Add("Fail with fetch achivements");
+                return response;
+            }
+            else
+            {
+                response.StatusCode = HttpStatusCode.OK;
+                response.isSuccess = true;
+                response.Result = user;
+                return response;
+            }
+
+        }
 
         public async Task<APIResponse> RegisterAsync(UserRegisterDTO model, string PhotoUrl)
         {

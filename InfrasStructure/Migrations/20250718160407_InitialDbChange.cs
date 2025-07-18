@@ -32,6 +32,8 @@ namespace InfrasStructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     ProfilePhotoUrl = table.Column<string>(type: "text", nullable: false),
+                    DoingAction = table.Column<int>(type: "integer", nullable: false),
+                    ImpactPoints = table.Column<int>(type: "integer", nullable: false),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -71,6 +73,28 @@ namespace InfrasStructure.Migrations
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Achievements",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    IconUrl = table.Column<string>(type: "text", nullable: true),
+                    AchievedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Achievements", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Achievements_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -356,6 +380,11 @@ namespace InfrasStructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Achievements_UserId",
+                table: "Achievements",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Activities_CreatedByCompanyId",
                 table: "Activities",
                 column: "CreatedByCompanyId");
@@ -474,6 +503,9 @@ namespace InfrasStructure.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Achievements");
+
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InfrasStructure.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20250718132932_InitialDbChange")]
+    [Migration("20250718160407_InitialDbChange")]
     partial class InitialDbChange
     {
         /// <inheritdoc />
@@ -24,6 +24,36 @@ namespace InfrasStructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("Application.Entities.Achievement", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("AchievedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("IconUrl")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Achievements");
+                });
 
             modelBuilder.Entity("Application.Entities.Base.Activity", b =>
                 {
@@ -257,12 +287,18 @@ namespace InfrasStructure.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("text");
 
+                    b.Property<int>("DoingAction")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("boolean");
+
+                    b.Property<int>("ImpactPoints")
+                        .HasColumnType("integer");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");
@@ -441,6 +477,17 @@ namespace InfrasStructure.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("Application.Entities.Achievement", b =>
+                {
+                    b.HasOne("Application.Entities.Base.User", "User")
+                        .WithMany("Achievements")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Application.Entities.Base.Activity", b =>
@@ -636,6 +683,8 @@ namespace InfrasStructure.Migrations
 
             modelBuilder.Entity("Application.Entities.Base.User", b =>
                 {
+                    b.Navigation("Achievements");
+
                     b.Navigation("ActivityRegistrations");
 
                     b.Navigation("Comments");
