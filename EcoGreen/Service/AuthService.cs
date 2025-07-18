@@ -47,7 +47,7 @@ namespace EcoGreen.Services
 
                 response.StatusCode = HttpStatusCode.OK;
                 response.isSuccess = true;
-                response.Result = new AuthResponse { Token = token, UserId = user.Id, UserName = user.UserName, Email = user.Email, ProfilePhotoUrl = user.ProfilePhotoUrl };
+                response.Result = new AuthResponse { Token = token, UserId = user.Id, UserName = user.UserName, Email = user.Email, ProfilePhotoUrl = user.ProfilePhotoUrl, Role = roles[0] };
                 return response;
             }
 
@@ -142,7 +142,7 @@ namespace EcoGreen.Services
                 return response;
             }
 
-            var roleResult = await _authRepository.AddRolesAsync(user, new string[] { "User" });
+            var roleResult = await _authRepository.AddRolesAsync(user, new string[] { model.Role });
 
             if (!roleResult.Succeeded)
             {
@@ -158,7 +158,7 @@ namespace EcoGreen.Services
             return response;
         }
 
-        public async Task<APIResponse> GoogleLoginAsync(GoogleJsonWebSignature.Payload payload)
+        public async Task<APIResponse> GoogleLoginAsync(GoogleJsonWebSignature.Payload payload, string role)
         {
             var response = new APIResponse();
             if (payload == null)
@@ -186,7 +186,7 @@ namespace EcoGreen.Services
                     return response;
                 }
 
-                var roleResult = await _authRepository.AddRolesAsync(user, new string[] { "User" });
+                var roleResult = await _authRepository.AddRolesAsync(user, new string[] { role });
 
                 if (!roleResult.Succeeded)
                 {
@@ -197,14 +197,21 @@ namespace EcoGreen.Services
                 }
             }
             var roles = await _authRepository.GetRolesAsync(user);
+            if (!roles.Contains(role))
+            {
+                response.StatusCode = HttpStatusCode.BadRequest;
+                response.isSuccess = false;
+                response.ErrorMessages.Add($"Account is being {roles[0]} so that does not have the required role: {role}");
+                return response;
+            }
             if (roles == null || !roles.Any())
             {
-                roles = new List<string> { "User" }; // Default role if none assigned
+                roles = new List<string> { role }; // Default role if none assigned
             }
             var token = _tokenService.GenerateJwtToken(user, roles.ToList());
             response.StatusCode = HttpStatusCode.OK;
             response.isSuccess = true;
-            response.Result = new AuthResponse { Token = token, UserId = user.Id, UserName = user.UserName, Email = user.Email, ProfilePhotoUrl = user.ProfilePhotoUrl };
+            response.Result = new AuthResponse { Token = token, UserId = user.Id, UserName = user.UserName, Email = user.Email, ProfilePhotoUrl = user.ProfilePhotoUrl, Role = roles[0] };
             return response;
         }
     }

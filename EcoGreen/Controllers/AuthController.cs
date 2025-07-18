@@ -85,7 +85,7 @@ namespace EcoGreen.Controllers
             {
                 return BadRequest("Invalid Google token");
             }
-            var response = await _authService.GoogleLoginAsync(payload);
+            var response = await _authService.GoogleLoginAsync(payload, request.role);
             if (response.isSuccess)
             {
                 return Ok(response);
