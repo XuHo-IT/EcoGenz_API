@@ -10,6 +10,7 @@ namespace Application.Interface.IServices
         Task<APIResponse> LoginAsync(UserLoginDTO model);
         Task<APIResponse> GoogleLoginAsync(GoogleJsonWebSignature.Payload payload, string role);
         Task<APIResponse> FindUserById(string id);
+        Task<APIResponse> GetUsersByPointAscAsync();
 
     }
 }

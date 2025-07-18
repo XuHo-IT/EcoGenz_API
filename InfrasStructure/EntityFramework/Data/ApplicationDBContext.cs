@@ -1,4 +1,5 @@
-﻿using Application.Entities.Base;
+﻿using Application.Entities;
+using Application.Entities.Base;
 using Application.Entities.Base.Post;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -20,11 +21,19 @@ namespace InfrasStructure.EntityFramework.Data
         public DbSet<Like> Likes { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Share> Shares { get; set; }
+        public DbSet<Achievement> Achievements { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Achievement>()
+      .HasOne(r => r.User)
+      .WithMany(u => u.Achievements)
+      .HasForeignKey(r => r.UserId)
+      .OnDelete(DeleteBehavior.Restrict);
+
 
             // User has many Registrations
             modelBuilder.Entity<Registration>()

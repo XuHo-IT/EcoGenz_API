@@ -1,4 +1,5 @@
-﻿using Application.Entities.Base;
+﻿using Application.Entities;
+using Application.Entities.Base;
 using Application.Entities.Base.Post;
 using Application.Entities.DTOs;
 using Application.Interface;
@@ -13,16 +14,58 @@ namespace InfrasStructure.EntityFramework.Repository
     public class PostRepository : IPostRepository
     {
         private readonly ApplicationDBContext _context;
+        private readonly IAuthRepository _authRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public PostRepository(ApplicationDBContext context, IUnitOfWork unitOfWork)
+        public PostRepository(ApplicationDBContext context, IUnitOfWork unitOfWork, IAuthRepository authRepository)
         {
             _context = context;
             _unitOfWork = unitOfWork;
+            _authRepository = authRepository;
         }
 
         public async Task CreatePost(Post Post)
         {
+            var user = await _authRepository.FindByIdAsync(Post.UserId.ToString());
+            if (user == null)
+                throw new Exception("User not found.");
+            user.DoingAction += 1;
+            user.ImpactPoints += 10;
+
+            var achievementCandidates = new List<(int Threshold, string Name, string Description)>
+{
+    (10, "Seed Planter", "You're just getting started! Earned 10 impact points."),
+    (25, "Helping Hand", "You're making a difference. Earned 25 points through kind acts."),
+    (50, "Eco Hero", "You earned 50 impact points!"),
+    (75, "Green Guardian", "You've taken the environment under your wing. 75 points strong!"),
+    (100, "Charity Champion", "A true hero of charity. 100 points achieved!"),
+    (150, "Earth Defender", "You've stood up for our planet with 150 points."),
+    (200, "Hope Spreader", "Spreading hope through actions — 200 points milestone reached."),
+    (300, "Impact Warrior", "You're a relentless force for good. 300 points earned!"),
+    (500, "Legend of Good", "A legendary contributor. 500 points of pure impact!"),
+    (750, "Planet Pioneer", "Blazing the trail for others. 750 points and counting."),
+    (1000, "Global Guardian", "The ultimate protector of people and planet. 1000 points achieved!")
+};
+
+
+            foreach (var (threshold, name, description) in achievementCandidates.OrderByDescending(a => a.Threshold))
+            {
+                bool alreadyHas = user.Achievements.Any(a => a.Name == name);
+
+                if (user.ImpactPoints >= threshold && !alreadyHas)
+                {
+                    var newAchievement = new Achievement
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = name,
+                        Description = description,
+                        UserId = user.Id
+                    };
+
+                    _context.Achievements.Add(newAchievement);
+                    break;
+                }
+            }
             Post.CreatedAt = DateTime.UtcNow;
             await _context.Posts.AddAsync(Post);
             await _unitOfWork.SaveChangesAsync();

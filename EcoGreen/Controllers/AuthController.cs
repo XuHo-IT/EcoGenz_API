@@ -62,6 +62,20 @@ namespace EcoGreen.Controllers
             }
             return StatusCode((int)response.StatusCode, response);
         }
+        [HttpGet("userWithPoint")]
+        public async Task<IActionResult> GetUsersByPointAscAsync()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var response = await _authService.GetUsersByPointAscAsync();
+            if (response.isSuccess)
+            {
+                return Ok(response);
+            }
+            return StatusCode((int)response.StatusCode, response);
+        }
 
         [HttpPost("google")]
         public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequest request)
