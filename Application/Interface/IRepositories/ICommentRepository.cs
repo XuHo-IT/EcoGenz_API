@@ -6,6 +6,8 @@ namespace Application.Interface.IRepositories
     {
         Task AddCommentAsync(Comment comment);
         Task SaveChangesAsync();
+        Task<List<Comment>> ListComment();
+        Task<List<Comment>> GetCommentByActivityId(Guid activityId);
     }
 
 }

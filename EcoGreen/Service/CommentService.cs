@@ -38,5 +38,49 @@ namespace EcoGreen.Service
 
             return response;
         }
+        public async Task<APIResponse> ListCommentAsync()
+        {
+            var response = new APIResponse();
+
+            try
+            {
+                var comments = await _commentRepository.ListComment();
+
+                response.Result = comments;
+                response.StatusCode = HttpStatusCode.OK;
+                response.isSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                response.isSuccess = false;
+                response.StatusCode = HttpStatusCode.BadRequest;
+                response.ErrorMessages.Add(ex.Message);
+            }
+
+            return response;
+        }
+
+        public async Task<APIResponse> GetCommentByActivityId(Guid activityId)
+        {
+            var response = new APIResponse();
+
+            try
+            {
+                var comments = await _commentRepository.GetCommentByActivityId(activityId);
+
+                response.Result = comments;
+                response.StatusCode = HttpStatusCode.OK;
+                response.isSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                response.isSuccess = false;
+                response.StatusCode = HttpStatusCode.BadRequest;
+                response.ErrorMessages.Add(ex.Message);
+            }
+
+            return response;
+        }
+
     }
 }

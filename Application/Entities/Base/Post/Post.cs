@@ -24,8 +24,8 @@ namespace Application.Entities.Base.Post
         [ForeignKey(nameof(UserId))]
         public virtual User User { get; set; }
 
-        public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
-        public virtual ICollection<Like> Likes { get; set; } = new List<Like>();
-        public virtual ICollection<Share> Shares { get; set; } = new List<Share>();
+        //public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
+        //public virtual ICollection<Like> Likes { get; set; } = new List<Like>();
+        //public virtual ICollection<Share> Shares { get; set; } = new List<Share>();
     }
 }

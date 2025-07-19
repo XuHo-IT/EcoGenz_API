@@ -12,5 +12,13 @@ namespace Application.Entities.Base
         public ICollection<Comment> Comments { get; set; }
         public ICollection<Like> Likes { get; set; }
         public ICollection<Share> Shares { get; set; }
+        public virtual ICollection<Registration> ActivityRegistrations { get; set; } = new List<Registration>();
+
+        public int DoingAction { get; set; } = 0;
+        public int ImpactPoints { get; set; } = 0;
+
+        public virtual ICollection<Achievement> Achievements { get; set; } = new List<Achievement>();
+
+
     }
 }

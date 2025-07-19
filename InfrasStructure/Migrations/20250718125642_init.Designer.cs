@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InfrasStructure.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20250716094000_newDb")]
-    partial class newDb
+    [Migration("20250718125642_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -108,11 +108,11 @@ namespace InfrasStructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("ActivityId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("PostId")
-                        .HasColumnType("uuid");
 
                     b.Property<string>("Text")
                         .IsRequired()
@@ -124,7 +124,7 @@ namespace InfrasStructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PostId");
+                    b.HasIndex("ActivityId");
 
                     b.HasIndex("UserId");
 
@@ -472,9 +472,9 @@ namespace InfrasStructure.Migrations
 
             modelBuilder.Entity("Application.Entities.Base.Post.Comment", b =>
                 {
-                    b.HasOne("Application.Entities.Base.Post.Post", "Post")
+                    b.HasOne("Application.Entities.Base.Activity", "Activity")
                         .WithMany("Comments")
-                        .HasForeignKey("PostId")
+                        .HasForeignKey("ActivityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -484,7 +484,7 @@ namespace InfrasStructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Post");
+                    b.Navigation("Activity");
 
                     b.Navigation("User");
                 });
@@ -492,7 +492,7 @@ namespace InfrasStructure.Migrations
             modelBuilder.Entity("Application.Entities.Base.Post.Like", b =>
                 {
                     b.HasOne("Application.Entities.Base.Post.Post", "Post")
-                        .WithMany("Likes")
+                        .WithMany()
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -522,7 +522,7 @@ namespace InfrasStructure.Migrations
             modelBuilder.Entity("Application.Entities.Base.Post.Share", b =>
                 {
                     b.HasOne("Application.Entities.Base.Post.Post", "Post")
-                        .WithMany("Shares")
+                        .WithMany()
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -608,13 +608,9 @@ namespace InfrasStructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Application.Entities.Base.Post.Post", b =>
+            modelBuilder.Entity("Application.Entities.Base.Activity", b =>
                 {
                     b.Navigation("Comments");
-
-                    b.Navigation("Likes");
-
-                    b.Navigation("Shares");
                 });
 
             modelBuilder.Entity("Application.Entities.Base.User", b =>

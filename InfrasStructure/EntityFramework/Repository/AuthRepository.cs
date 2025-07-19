@@ -1,21 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Application.Entities.Base;
+﻿using Application.Entities.Base;
 using Application.Interface.IRepositories;
+using InfrasStructure.EntityFramework.Data;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace InfrasStructure.EntityFramework.Repository
 {
     public class AuthRepository : IAuthRepository
     {
         private readonly UserManager<User> _userManager;
+        private readonly ApplicationDBContext _context;
 
-        public AuthRepository(UserManager<User> userManager)
+        public AuthRepository(UserManager<User> userManager, ApplicationDBContext context)
         {
             _userManager = userManager;
+            _context = context;
         }
 
         public async Task<IdentityResult> CreateUserAsync(User user, string password)
@@ -23,10 +22,17 @@ namespace InfrasStructure.EntityFramework.Repository
             if (user == null) throw new ArgumentNullException(nameof(user));
 
             if (string.IsNullOrEmpty(password)) throw new ArgumentException("Password cannot be null or empty", nameof(password));
-            
+
             var result = await _userManager.CreateAsync(user, password);
-            
+
             return result;
+        }
+
+        public async Task<List<User>> GetUsersByPointAscAsync()
+        {
+            return await _context.Users
+                .OrderBy(u => u.ImpactPoints)
+                .ToListAsync();
         }
 
         public async Task<IdentityResult> CreateAsync(User user)
@@ -35,7 +41,7 @@ namespace InfrasStructure.EntityFramework.Repository
             var result = await _userManager.CreateAsync(user);
             return result;
         }
-        
+
 
         public async Task<User?> FindByEmailAsync(string email)
         {
@@ -56,9 +62,9 @@ namespace InfrasStructure.EntityFramework.Repository
         public async Task<User?> FindByUserNameAsync(string userName)
         {
             if (string.IsNullOrEmpty(userName)) throw new ArgumentException("UserName cannot be null or empty", nameof(userName));
-            
+
             var user = await _userManager.FindByNameAsync(userName);
-            
+
             return user;
         }
 
@@ -76,9 +82,9 @@ namespace InfrasStructure.EntityFramework.Repository
         public async Task<bool> CheckPasswordAsync(User user, string password)
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
-            
+
             if (string.IsNullOrEmpty(password)) throw new ArgumentException("Password cannot be null or empty", nameof(password));
-            
+
             var result = await _userManager.CheckPasswordAsync(user, password);
 
             return result;

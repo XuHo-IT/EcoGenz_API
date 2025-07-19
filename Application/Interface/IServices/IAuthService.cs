@@ -8,8 +8,9 @@ namespace Application.Interface.IServices
     {
         Task<APIResponse> RegisterAsync(UserRegisterDTO model, string PhotoUrl);
         Task<APIResponse> LoginAsync(UserLoginDTO model);
-        Task<APIResponse> GoogleLoginAsync(GoogleJsonWebSignature.Payload payload);
+        Task<APIResponse> GoogleLoginAsync(GoogleJsonWebSignature.Payload payload, string role);
         Task<APIResponse> FindUserById(string id);
+        Task<APIResponse> GetUsersByPointAscAsync();
 
     }
 }
