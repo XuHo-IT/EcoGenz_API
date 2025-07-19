@@ -9,7 +9,6 @@ namespace Application.Entities.Base.Post
         public Guid Id { get; set; }
 
         [Required(ErrorMessage = "Post content is required.")]
-        [StringLength(1000, ErrorMessage = "Content can't exceed 1000 characters.")]
         public string Content { get; set; }
 
         [StringLength(500, ErrorMessage = "Media URL can't exceed 500 characters.")]

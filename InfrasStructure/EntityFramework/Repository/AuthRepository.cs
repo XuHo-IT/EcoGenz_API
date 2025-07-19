@@ -58,7 +58,6 @@ namespace InfrasStructure.EntityFramework.Repository
 
             return user;
         }
-
         public async Task<User?> FindByUserNameAsync(string userName)
         {
             if (string.IsNullOrEmpty(userName)) throw new ArgumentException("UserName cannot be null or empty", nameof(userName));
@@ -96,5 +95,29 @@ namespace InfrasStructure.EntityFramework.Repository
             var roles = await _userManager.GetRolesAsync(user);
             return roles;
         }
+        public async Task<IdentityResult> UpdateUserAsync(User user)
+        {
+            var existingUser = await _userManager.FindByIdAsync(user.Id.ToString());
+            if (existingUser == null)
+                throw new InvalidOperationException($"User with ID {user.Id} not found.");
+
+            existingUser.UserName = user.UserName;
+            existingUser.Email = user.Email;
+            existingUser.ProfilePhotoUrl = user.ProfilePhotoUrl;
+
+            return await _userManager.UpdateAsync(existingUser);
+        }
+
+        public async Task<IdentityResult> ChangeUserPasswordAsync(User user, string currentPassword, string newPassword)
+        {
+            return await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
+        }
+        public async Task<IdentityResult> CreatePasswordAsync(User user, string password)
+        {
+            return await _userManager.CreateAsync(user, password);
+        }
+
+
+
     }
 }

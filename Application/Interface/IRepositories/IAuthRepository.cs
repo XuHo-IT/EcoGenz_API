@@ -14,5 +14,8 @@ namespace Application.Interface.IRepositories
         Task<bool> CheckPasswordAsync(User user, string password);
         Task<IList<string>> GetRolesAsync(User user);
         Task<List<User>> GetUsersByPointAscAsync();
+        Task<IdentityResult> UpdateUserAsync(User user);
+        Task<IdentityResult> ChangeUserPasswordAsync(User user, string currentPassword, string newPassword);
+        Task<IdentityResult> CreatePasswordAsync(User user, string password);
     }
 }

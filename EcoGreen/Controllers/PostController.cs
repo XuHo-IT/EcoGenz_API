@@ -61,10 +61,6 @@ namespace EcoGreen.Controllers
                 var imageUrl = await cloudinaryService.UploadImageAsync(imageFile);
                 post.MediaUrl = imageUrl;
             }
-            else
-            {
-                post.MediaUrl = "/Helpers/profile_base.jpg";
-            }
             var response = await _postService.CreatePost(post);
 
             return StatusCode((int)response.StatusCode, response);
