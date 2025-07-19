@@ -3,6 +3,7 @@ using Application.Entities.DTOs.User;
 using Application.Interface.IRepositories;
 using Application.Interface.IServices;
 using Application.Response;
+using EcoGreen.Service;
 using Google.Apis.Auth;
 using System.Net;
 
@@ -12,11 +13,13 @@ namespace EcoGreen.Services
     {
         private readonly IAuthRepository _authRepository;
         private readonly ITokenService _tokenService;
+        private readonly CloudinaryService cloudinaryService;
 
-        public AuthService(IAuthRepository authRepository, ITokenService tokenService)
+        public AuthService(IAuthRepository authRepository, ITokenService tokenService, CloudinaryService cloudinaryService)
         {
             _authRepository = authRepository;
             _tokenService = tokenService;
+            this.cloudinaryService = cloudinaryService;
         }
 
         public async Task<APIResponse> LoginAsync(UserLoginDTO model)

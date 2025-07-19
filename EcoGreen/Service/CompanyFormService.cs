@@ -239,5 +239,26 @@ namespace EcoGreen.Service
             }
             return response;
         }
+
+        public async Task<APIResponse> GetAllActivityFormsForAIVoice()
+        {
+            var response = new APIResponse();
+            try
+            {
+                var result = await _companyFormRepository.GetAllActivityFormsForAIVoice();
+                response.Result = result;
+                response.StatusCode = HttpStatusCode.OK;
+                response.isSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                var error = new APIException((int)HttpStatusCode.BadRequest, ex.Message, ex.StackTrace);
+
+                response.StatusCode = HttpStatusCode.BadRequest;
+                response.isSuccess = false;
+                response.ErrorMessages.Add(error.Message);
+            }
+            return response;
+        }
     }
 }

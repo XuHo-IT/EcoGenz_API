@@ -16,5 +16,6 @@ namespace Application.Interface.IRepositories
         Task UpdateActivityForm(Activity activityForm);
         Task DeleteActivityForm(Guid activityId);
         Task<User> GetUserById(Guid userId);
+        Task<IEnumerable<ActivityDTO>> GetAllActivityFormsForAIVoice();
     }
 }
