@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InfrasStructure.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20250718160407_InitialDbChange")]
-    partial class InitialDbChange
+    [Migration("20250719013758_updateDbWithContentInActivity")]
+    partial class updateDbWithContentInActivity
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -31,7 +31,7 @@ namespace InfrasStructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("AchievedAt")
+                    b.Property<DateTime?>("AchievedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
@@ -45,7 +45,7 @@ namespace InfrasStructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid?>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -191,8 +191,7 @@ namespace InfrasStructure.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -484,8 +483,7 @@ namespace InfrasStructure.Migrations
                     b.HasOne("Application.Entities.Base.User", "User")
                         .WithMany("Achievements")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("User");
                 });
