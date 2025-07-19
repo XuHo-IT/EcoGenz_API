@@ -2,6 +2,7 @@
 using Application.Entities.DTOs.User;
 using Application.Interface.IRepositories;
 using Application.Interface.IServices;
+using Application.Request.User;
 using Application.Response;
 using EcoGreen.Service;
 using Google.Apis.Auth;
@@ -178,9 +179,8 @@ namespace EcoGreen.Services
                 {
                     UserName = payload.Name,
                     Email = payload.Email,
-                    ProfilePhotoUrl = payload.Picture
                 };
-                var identityResult = await _authRepository.CreateAsync(user);
+                var identityResult = await _authRepository.CreatePasswordAsync(user, "123456");
                 if (!identityResult.Succeeded)
                 {
                     response.StatusCode = HttpStatusCode.BadRequest;
@@ -215,6 +215,71 @@ namespace EcoGreen.Services
             response.StatusCode = HttpStatusCode.OK;
             response.isSuccess = true;
             response.Result = new AuthResponse { Token = token, UserId = user.Id, UserName = user.UserName, Email = user.Email, ProfilePhotoUrl = user.ProfilePhotoUrl, Role = roles[0] };
+            return response;
+        }
+        public async Task<APIResponse> UpdateUserAsync(UserUpdateRequest updateRequest)
+        {
+            var response = new APIResponse();
+
+            var user = await _authRepository.FindByIdAsync(updateRequest.UserId.ToString());
+            if (user == null)
+            {
+                response.StatusCode = HttpStatusCode.NotFound;
+                response.isSuccess = false;
+                response.ErrorMessages.Add("User not found.");
+                return response;
+            }
+
+            // Map fields
+            user.UserName = updateRequest.UserName;
+            user.Email = updateRequest.UserEmail;
+            if (!string.IsNullOrEmpty(updateRequest.ProfilePhotoUrl))
+            {
+                user.ProfilePhotoUrl = updateRequest.ProfilePhotoUrl;
+            }
+
+            var result = await _authRepository.UpdateUserAsync(user);
+
+            if (!result.Succeeded)
+            {
+                response.StatusCode = HttpStatusCode.BadRequest;
+                response.isSuccess = false;
+                response.ErrorMessages.AddRange(result.Errors.Select(e => e.Description));
+                return response;
+            }
+
+            response.StatusCode = HttpStatusCode.OK;
+            response.isSuccess = true;
+            response.Result = "User updated successfully";
+            return response;
+        }
+
+        public async Task<APIResponse> ChangeUserPasswordAsync(UserUpdateRequest updateRequest, string currentPassword, string newPassword)
+        {
+            var response = new APIResponse();
+
+            var user = await _authRepository.FindByIdAsync(updateRequest.UserId.ToString());
+            if (user == null)
+            {
+                response.StatusCode = HttpStatusCode.NotFound;
+                response.isSuccess = false;
+                response.ErrorMessages.Add("User not found.");
+                return response;
+            }
+
+            var result = await _authRepository.ChangeUserPasswordAsync(user, currentPassword, newPassword);
+
+            if (!result.Succeeded)
+            {
+                response.StatusCode = HttpStatusCode.BadRequest;
+                response.isSuccess = false;
+                response.ErrorMessages.AddRange(result.Errors.Select(e => e.Description));
+                return response;
+            }
+
+            response.StatusCode = HttpStatusCode.OK;
+            response.isSuccess = true;
+            response.Result = "Password updated successfully";
             return response;
         }
     }

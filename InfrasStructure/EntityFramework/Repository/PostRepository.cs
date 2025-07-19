@@ -71,10 +71,16 @@ namespace InfrasStructure.EntityFramework.Repository
             await _unitOfWork.SaveChangesAsync();
         }
 
-        public Task DeletePost(Guid PostId)
+        public async Task DeletePost(Guid postId)
         {
-            throw new NotImplementedException();
+            var post = await _context.Posts.FindAsync(postId);
+            if (post != null)
+            {
+                _context.Posts.Remove(post);
+                await _context.SaveChangesAsync();
+            }
         }
+
 
         public async Task<IEnumerable<Post>> GetAllPost()
         {

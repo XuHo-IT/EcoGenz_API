@@ -45,6 +45,15 @@ namespace InfrasStructure.EntityFramework.Repository
                                  .ToListAsync();
         }
 
+        public async Task<IEnumerable<Activity>> GetAllActivityFormsByUserId(Guid userId)
+        {
+            return await _context.Activities
+                                 .Where(a => a.CreatedByCompanyId == userId)
+                                 .Include(a => a.CompanyUser)
+                                 .AsNoTracking()
+                                 .ToListAsync();
+        }
+
         public async Task<Activity?> GetActivityFormBy(Expression<Func<Activity, bool>> predicate)
         {
             return await _context.Activities
