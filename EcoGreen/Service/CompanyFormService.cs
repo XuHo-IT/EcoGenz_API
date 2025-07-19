@@ -212,6 +212,37 @@ namespace EcoGreen.Service
             return response;
         }
 
+        public async Task<APIResponse> GetAllActivityFormsByUserId(Guid userId)
+        {
+            var response = new APIResponse();
+            try
+            {
+                // Validate that the user exists
+                var user = await _companyFormRepository.GetUserById(userId);
+                if (user == null)
+                {
+                    response.StatusCode = HttpStatusCode.NotFound;
+                    response.isSuccess = false;
+                    response.ErrorMessages.Add($"User with ID {userId} not found.");
+                    return response;
+                }
+
+                var result = await _companyFormRepository.GetAllActivityFormsByUserId(userId);
+                response.Result = result;
+                response.StatusCode = HttpStatusCode.OK;
+                response.isSuccess = true;
+            }
+            catch(Exception ex)
+            {
+                var error = new APIException((int)HttpStatusCode.BadRequest, ex.Message, ex.StackTrace);
+
+                response.StatusCode = HttpStatusCode.BadRequest;
+                response.isSuccess = false;
+                response.ErrorMessages.Add(error.Message);
+            }
+            return response;
+        }
+
         public async Task<APIResponse> UpdateActivityForm(Activity activityForm)
         {
             var response = new APIResponse();

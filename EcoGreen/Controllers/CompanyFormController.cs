@@ -26,6 +26,13 @@ namespace EcoGreen.Controllers
             return StatusCode((int)response.StatusCode, response);
         }
 
+        [HttpGet("get-all-activities-by-userid/{userId}")]
+        public async Task<IActionResult> GetAllActivitiesByUserId(Guid userId)
+        {
+            var response = await _companyFormService.GetAllActivityFormsByUserId(userId);
+            return StatusCode((int)response.StatusCode, response);
+        }
+
         [HttpGet("search-activities")]
         public async Task<IActionResult> SearchActivities([FromQuery] ActivitySearchRequest request)
         {
