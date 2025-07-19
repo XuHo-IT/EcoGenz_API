@@ -35,10 +35,6 @@ namespace EcoGreen.Controllers
                 var imageUrl = await cloudinaryService.UploadImageAsync(imageFile);
                 user.ProfilePhotoUrl = imageUrl;
             }
-            else
-            {
-                user.ProfilePhotoUrl = "/Helpers/profile_base.jpg";
-            }
             var response = await _authService.RegisterAsync(registerModel, user.ProfilePhotoUrl);
             if (response.isSuccess)
             {
@@ -62,6 +58,41 @@ namespace EcoGreen.Controllers
             }
             return StatusCode((int)response.StatusCode, response);
         }
+        [HttpPut("update-user")]
+        public async Task<IActionResult> UpdateUser(
+        [FromForm] UserUpdateRequest updateRequest,
+        IFormFile? imageFile,
+        [FromServices] CloudinaryService cloudinaryService)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // ✅ Upload image if available and assign to request
+            if (imageFile != null && imageFile.Length > 0)
+            {
+                var imageUrl = await cloudinaryService.UploadImageAsync(imageFile);
+                updateRequest.ProfilePhotoUrl = imageUrl;
+            }
+
+            // ✅ Call the service with the updated request
+            var response = await _authService.UpdateUserAsync(updateRequest);
+
+            return StatusCode((int)response.StatusCode, response);
+        }
+
+
+        [HttpPut("change-password")]
+        public async Task<IActionResult> ChangePassword(
+            [FromBody] UserUpdateRequest updateRequest,
+            [FromQuery] string currentPassword,
+            [FromQuery] string newPassword)
+        {
+            var response = await _authService.ChangeUserPasswordAsync(updateRequest, currentPassword, newPassword);
+            return StatusCode((int)response.StatusCode, response);
+        }
+
         [HttpGet("userWithPoint")]
         public async Task<IActionResult> GetUsersByPointAscAsync()
         {

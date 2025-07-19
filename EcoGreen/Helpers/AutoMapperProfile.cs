@@ -3,6 +3,7 @@ using Application.Entities.Base.Post;
 using Application.Entities.DTOs.User;
 using Application.Request.Activity;
 using Application.Request.Post;
+using Application.Request.User;
 using AutoMapper;
 
 namespace EcoGreen.Helpers
@@ -78,6 +79,10 @@ namespace EcoGreen.Helpers
      .ForMember(dest => dest.CreatedByCompanyId, opt => opt.Ignore())
      .ForMember(dest => dest.IsApproved, opt => opt.Ignore());
 
+            CreateMap<UserUpdateRequest, User>()
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.UserEmail))
+            .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.UserName))
+            .ForMember(dest => dest.ProfilePhotoUrl, opt => opt.Ignore());
 
 
         }

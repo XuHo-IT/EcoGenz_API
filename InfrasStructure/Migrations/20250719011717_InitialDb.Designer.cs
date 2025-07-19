@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InfrasStructure.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20250718125642_init")]
-    partial class init
+    [Migration("20250719011717_InitialDb")]
+    partial class InitialDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,36 @@ namespace InfrasStructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("Application.Entities.Achievement", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("AchievedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("IconUrl")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Achievements");
+                });
 
             modelBuilder.Entity("Application.Entities.Base.Activity", b =>
                 {
@@ -215,6 +245,9 @@ namespace InfrasStructure.Migrations
                     b.Property<Guid>("ActivityId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("ActivityId1")
+                        .HasColumnType("uuid");
+
                     b.Property<bool>("Attended")
                         .HasColumnType("boolean");
 
@@ -224,11 +257,19 @@ namespace InfrasStructure.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("UserId1")
+                        .HasColumnType("uuid");
+
                     b.HasKey("RegistrationId");
 
                     b.HasIndex("ActivityId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("ActivityId1");
+
+                    b.HasIndex("UserId1");
+
+                    b.HasIndex("UserId", "ActivityId")
+                        .IsUnique();
 
                     b.ToTable("Registrations");
                 });
@@ -246,12 +287,18 @@ namespace InfrasStructure.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("text");
 
+                    b.Property<int>("DoingAction")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("boolean");
+
+                    b.Property<int>("ImpactPoints")
+                        .HasColumnType("integer");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");
@@ -432,6 +479,16 @@ namespace InfrasStructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Application.Entities.Achievement", b =>
+                {
+                    b.HasOne("Application.Entities.Base.User", "User")
+                        .WithMany("Achievements")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Application.Entities.Base.Activity", b =>
                 {
                     b.HasOne("Application.Entities.Base.User", "CompanyUser")
@@ -546,11 +603,19 @@ namespace InfrasStructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Application.Entities.Base.Activity", null)
+                        .WithMany("ActivityRegistrations")
+                        .HasForeignKey("ActivityId1");
+
                     b.HasOne("Application.Entities.Base.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("Application.Entities.Base.User", null)
+                        .WithMany("ActivityRegistrations")
+                        .HasForeignKey("UserId1");
 
                     b.Navigation("Activity");
 
@@ -610,11 +675,17 @@ namespace InfrasStructure.Migrations
 
             modelBuilder.Entity("Application.Entities.Base.Activity", b =>
                 {
+                    b.Navigation("ActivityRegistrations");
+
                     b.Navigation("Comments");
                 });
 
             modelBuilder.Entity("Application.Entities.Base.User", b =>
                 {
+                    b.Navigation("Achievements");
+
+                    b.Navigation("ActivityRegistrations");
+
                     b.Navigation("Comments");
 
                     b.Navigation("Likes");
