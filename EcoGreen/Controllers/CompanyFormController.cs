@@ -259,5 +259,12 @@ namespace EcoGreen.Controllers
 
             return Ok(new { message = "Attendance updated successfully." });
         }
+
+        [HttpGet("get-all-activities-ai-voice")]
+        public async Task<IActionResult> GetAllActivityFormsForAIVoice()
+        {
+            var response = await _companyFormService.GetAllActivityFormsForAIVoice();
+            return StatusCode((int)response.StatusCode, response);
+        }
     }
 }

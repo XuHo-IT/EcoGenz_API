@@ -219,5 +219,17 @@ namespace InfrasStructure.EntityFramework.Repository
                 _ => isDescending ? query.OrderByDescending(a => a.Date) : query.OrderBy(a => a.Date)
             };
         }
+
+        public async Task<IEnumerable<ActivityDTO>> GetAllActivityFormsForAIVoice()
+        {
+            return await _context.Activities
+                                 .Select(a => new ActivityDTO
+                                 {
+                                     Title = a.Title,
+                                     Description = a.Description,
+                                     Location = a.Location,
+                                     Date = a.Date,
+                                 }).ToListAsync();
+        }
     }
 }

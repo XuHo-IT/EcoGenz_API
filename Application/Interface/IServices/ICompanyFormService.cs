@@ -1,4 +1,5 @@
 ﻿using Application.Entities.Base;
+using Application.Entities.DTOs;
 using Application.Request.Activity;
 using Application.Response;
 using System.Linq.Expressions;
@@ -16,5 +17,6 @@ namespace Application.Interface.IServices
         Task<APIResponse> CreateActivityForm(Activity activityForm);
         Task<APIResponse> UpdateActivityForm(Activity activityForm);
         Task<APIResponse> DeleteActivityForm(Guid activityId);
+        Task<APIResponse> GetAllActivityFormsForAIVoice();
     }
 }
