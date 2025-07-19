@@ -136,7 +136,8 @@ namespace EcoGreen.Controllers
             {
                 RegistrationId = Guid.NewGuid(),
                 UserId = request.UserId,
-                ActivityId = request.ActivityId
+                ActivityId = request.ActivityId,
+                Status = RegistrationStatus.Pending
             };
 
             _context.Registrations.Add(registration);
@@ -203,6 +204,60 @@ namespace EcoGreen.Controllers
                 .ToListAsync();
 
             return Ok(users);
+        }
+
+        // GET: api/activities/{activityId}/registrations
+        [HttpGet("{activityId}/registrations")]
+        public async Task<IActionResult> GetRegistrationsForActivity(Guid activityId)
+        {
+            var registrations = await _context.Registrations
+                .Where(r => r.ActivityId == activityId)
+                .Include(r => r.User)
+                .Select(r => new
+                {
+                    r.RegistrationId,
+                    r.UserId,
+                    r.Status,
+                    r.Attended,
+                    User = new
+                    {
+                        r.User.Id,
+                        r.User.UserName,
+                        r.User.Email,
+                        r.User.ProfilePhotoUrl
+                    }
+                })
+                .ToListAsync();
+
+            return Ok(registrations);
+        }
+
+        // PUT: api/activities/registrations/{registrationId}/status
+        [HttpPut("registrations/{registrationId}/status")]
+        public async Task<IActionResult> UpdateRegistrationStatus(Guid registrationId, [FromBody] UpdateRegistrationStatusRequest request)
+        {
+            var registration = await _context.Registrations.FindAsync(registrationId);
+            if (registration == null)
+                return NotFound(new { message = "Registration not found." });
+
+            registration.Status = request.Status;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Registration status updated successfully." });
+        }
+
+        // PUT: api/activities/registrations/{registrationId}/attendance
+        [HttpPut("registrations/{registrationId}/attendance")]
+        public async Task<IActionResult> UpdateRegistrationAttendance(Guid registrationId, [FromBody] UpdateAttendanceRequest request)
+        {
+            var registration = await _context.Registrations.FindAsync(registrationId);
+            if (registration == null)
+                return NotFound(new { message = "Registration not found." });
+
+            registration.Attended = request.Attended;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Attendance updated successfully." });
         }
     }
 }
